@@ -22,7 +22,7 @@
             if (name == null) {
         %>
         <div class="container mt-4">
-            <p><font color='red'>You must login to view the personal page</font></p>
+            <p><span class="text-danger">You must login to view the personal page</span></p>
         </div>
         <%  } else {
         %>
