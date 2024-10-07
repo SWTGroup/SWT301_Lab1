@@ -35,6 +35,7 @@ public class AccountDAO {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return acc;
     }
@@ -74,6 +75,7 @@ public class AccountDAO {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -92,15 +94,18 @@ public class AccountDAO {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return result;
     }
 
-    public static int insertAccount(String newEmail, String newPassword, String newFullname, String newPhone, int newStatus, int newRole) throws Exception {
+    public static int insertAccount(String newEmail, String newPassword, String newFullname, String
+newPhone, int newStatus, int newRole) throws Exception {
         int result = 0;
         try (Connection cn = DBUtils.makeConnection()) {
             if (cn != null) {
-                String sql = "INSERT INTO dbo.Accounts (email, password, fullname, phone, status, role) VALUES (?, ?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO dbo.Accounts (email, password, fullname, phone, status, role) "
+                        + "VALUES (?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement pst = cn.prepareStatement(sql)) {
                     pst.setString(1, newEmail);
                     pst.setString(2, newPassword);
@@ -127,6 +132,7 @@ public class AccountDAO {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -156,6 +162,7 @@ public class AccountDAO {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return acc;
     }
