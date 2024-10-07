@@ -23,7 +23,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary" name="action" value="searchOrderByEmail">Search</button>
             </form>
-            <h1></h1>
+            <h1>Order List</h1>
             <table class="table table-bordered table-striped">
                 <thead class="thead-dark">
                     <tr>
