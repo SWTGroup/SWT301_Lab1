@@ -5,8 +5,8 @@ img {
 *{
     box-sizing:border-box;
 }
-html{
-    font-family: arial;
+html {
+    font-family: Arial, sans-serif;
     font-size: 12px;
 }
 header,section,footer,nav,ul {
