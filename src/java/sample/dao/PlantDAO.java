@@ -28,7 +28,15 @@ public class PlantDAO {
                     }
                 }
 
-                PreparedStatement pst = cn.prepareStatement(sql);
+                try (PreparedStatement pst = cn.prepareStatement(sql)) {
+
+  PreparedStatement here
+
+} catch (SQLException e) {
+
+    e.printStackTrace();
+
+}
                 if (searchby != null && !searchby.isEmpty()) {
                     pst.setString(1, "%" + keyword + "%");
                 }
