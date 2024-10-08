@@ -36,7 +36,11 @@
             %>
             <font style='color:red;'><%= (request.getAttribute("WARNING") == null) ? "" : (String) request.getAttribute("WARNING")%> </font>
 
-            <table width="100%" class="shopping">
+           <table style="width: 100%;" class="shopping">
+
+    <!-- table content -->
+
+</table>
                 <tr><td>Product id</td><td>Price</td><td>Image</td><td>Quantity</td><td>Action</td></tr>
                 <%
                     HashMap<String, Integer> cart = (HashMap) session.getAttribute("cart");
