@@ -23,12 +23,34 @@
             %>
             <form action="updateprofileServlet?txtemail=<%= email%>" method="post">
                 <h1>Update your profile</h1>
-                <table>
-                    <tr><td>Your account: </td><td><p name="txtemail"><% out.println(email); %></p></td></tr>
-                    <tr><td>New full name</td><td><input type="text" name="txtfullname" required=""></td></tr>
-                    <tr><td>New phone</td><td><input type="text" name="txtphone"></td></tr>
-                    <tr><td>New password</td><td><input type="text" name="txtpassword" required=""></td></tr>
-                    <tr><td colspan="2"><input type="submit" value="update" name="action"></td></tr>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Input</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Your account:</td>
+                            <td><p name="txtemail"><% out.println(email); %></p></td>
+                        </tr>
+                        <tr>
+                            <td>New full name</td>
+                            <td><input type="text" name="txtfullname" required=""></td>
+                        </tr>
+                        <tr>
+                            <td>New phone</td>
+                            <td><input type="text" name="txtphone"></td>
+                        </tr>
+                        <tr>
+                            <td>New password</td>
+                            <td><input type="text" name="txtpassword" required=""></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><input type="submit" value="update" name="action"></td>
+                        </tr>
+                    </tbody>
                 </table>
             </form>
         </section>
@@ -36,5 +58,4 @@
             <%@include file="footer.jsp" %>
         </footer>
     </body>
-</body>
 </html>
