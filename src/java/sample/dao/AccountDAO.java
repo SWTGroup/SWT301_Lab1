@@ -40,28 +40,41 @@ public class AccountDAO {
         return acc;
     }
 
-    public static ArrayList<Account> getAccounts() throws Exception {
-        ArrayList<Account> list = new ArrayList<>();
-        try (Connection cn = DBUtils.makeConnection()) {
-            if (cn != null) {
-                String sql = "SELECT accID, email, password, fullname, phone, status, role FROM dbo.Accounts";
-                try (Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-                    while (rs.next()) {
-                        private static final String ACC_ID = "accID";
-                        String email = rs.getString("email");
-                        String password = rs.getString("password");
-                        String fullname = rs.getString("fullname");
-                        String phone = rs.getString("phone");
-                        int status = rs.getInt("status");
-                        int role = rs.getInt("role");
-                        Account acc = new Account(accID, email, password, fullname, status, phone, role);
-                        list.add(acc);
-                    }
+   public static ArrayList<Account> getAccounts() throws AccountException {
+    ArrayList<Account> list = new ArrayList<>();
+    
+    try (Connection cn = DBUtils.makeConnection()) {
+        if (cn != null) {
+            String sql = "SELECT accID, email, password, fullname, phone, status, role FROM dbo.Accounts";
+            try (Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                while (rs.next()) {
+                    // Retrieve account information
+                    int accID = rs.getInt("accID");
+                    String email = rs.getString("email");
+                    String password = rs.getString("password");
+                    String fullname = rs.getString("fullname");
+                    String phone = rs.getString("phone");
+                    int status = rs.getInt("status");
+                    int role = rs.getInt("role");
+                    
+                    // Create account object
+                    Account acc = new Account(accID, email, password, fullname, phone, status, role);
+                    
+                    // Add account to the list
+                    list.add(acc);
                 }
             }
         }
-        return list;
+    } catch (SQLException e) {
+        throw new AccountException("Error fetching accounts from the database", e);
+    } catch (IOException e) {
+        throw new AccountException("IO error occurred while retrieving accounts", e);
+    } catch (Exception e) {
+        throw new AccountException("An unexpected error occurred", e);
     }
+    
+    return list;
+}
 
     public static boolean updateAccountStatus(String email, int status) {
         boolean result = false;
