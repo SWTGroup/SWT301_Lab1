@@ -81,7 +81,8 @@ public class OrderDAO {
         try (Connection cn = DBUtils.makeConnection()) {
             cn.setAutoCommit(false);
 
-            int accID = 0, orderID = 0;
+            int accID = 0;
+            int orderID = 0;
             try (PreparedStatement pst = cn.prepareStatement(getAccIDSql)) {
                 pst.setString(1, email);
                 try (ResultSet rs = pst.executeQuery()) {
