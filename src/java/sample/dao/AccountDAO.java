@@ -40,8 +40,9 @@ public class AccountDAO {
         return acc;
     }
 
-   public static ArrayList<Account> getAccounts() throws AccountException {
-    ArrayList<Account> list = new ArrayList<>();
+   public static List<Account>getAccounts() throws AccountException {
+
+    List<Account> accounts = new ArrayList<>();
     
     try (Connection cn = DBUtils.makeConnection()) {
         if (cn != null) {
