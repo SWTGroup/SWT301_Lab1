@@ -3,32 +3,44 @@ package sample.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import sample.dto.Account;
 import sample.utils.DBUtils;
+import sample.exceptions.AccountException;
 
 public class AccountDAO {
 
+    // Define constants for field names
+    private static final String FULLNAME = "fullname";
+    private static final String ACCID = "accID";
+    private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
+    private static final String PHONE = "phone";
+    private static final String STATUS = "status";
+    private static final String ROLE = "role";
+    
     public static Account getAccount(String email, String password) {
         Account acc = null;
         try (Connection cn = DBUtils.makeConnection()) {
             if (cn != null) {
-                String sql = "SELECT accID, email, password, fullname, phone, status, role "
-                        + "FROM dbo.Accounts "
-                        + "WHERE status = 1 AND email = ? AND password = ? COLLATE Latin1_General_CS_AS";
+                String sql = "SELECT " + ACCID + ", " + EMAIL + ", " + PASSWORD + ", " + FULLNAME + ", " + PHONE + ", " + STATUS + ", " + ROLE
+                        + " FROM dbo.Accounts "
+                        + " WHERE " + STATUS + " = 1 AND " + EMAIL + " = ? AND " + PASSWORD + " = ? COLLATE Latin1_General_CS_AS";
                 try (PreparedStatement pst = cn.prepareStatement(sql)) {
                     pst.setString(1, email);
                     pst.setString(2, password);
                     try (ResultSet rs = pst.executeQuery()) {
                         if (rs.next()) {
-                            int accID = rs.getInt("accID");
-                            String emailDb = rs.getString("email");
-                            String passwordDb = rs.getString("password");
-                            String fullname = rs.getString("fullname");
-                            String phone = rs.getString("phone");
-                            int status = rs.getInt("status");
-                            int role = rs.getInt("role");
+                            int accID = rs.getInt(ACCID);
+                            String emailDb = rs.getString(EMAIL);
+                            String passwordDb = rs.getString(PASSWORD);
+                            String fullname = rs.getString(FULLNAME);
+                            String phone = rs.getString(PHONE);
+                            int status = rs.getInt(STATUS);
+                            int role = rs.getInt(ROLE);
                             acc = new Account(accID, emailDb, passwordDb, fullname, status, phone, role);
                         }
                     }
@@ -40,48 +52,46 @@ public class AccountDAO {
         return acc;
     }
 
-   public static List<Account>getAccounts() throws AccountException {
+   public static List<Account> getAccounts() throws AccountException {
 
     List<Account> accounts = new ArrayList<>();
     
     try (Connection cn = DBUtils.makeConnection()) {
         if (cn != null) {
-            String sql = "SELECT accID, email, password, fullname, phone, status, role FROM dbo.Accounts";
+            String sql = "SELECT " + ACCID + ", " + EMAIL + ", " + PASSWORD + ", " + FULLNAME + ", " + PHONE + ", " + STATUS + ", " + ROLE + " FROM dbo.Accounts";
             try (Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
                 while (rs.next()) {
                     // Retrieve account information
-                    int accID = rs.getInt("accID");
-                    String email = rs.getString("email");
-                    String password = rs.getString("password");
-                    String fullname = rs.getString("fullname");
-                    String phone = rs.getString("phone");
-                    int status = rs.getInt("status");
-                    int role = rs.getInt("role");
+                    int accID = rs.getInt(ACCID);
+                    String email = rs.getString(EMAIL);
+                    String password = rs.getString(PASSWORD);
+                    String fullname = rs.getString(FULLNAME);
+                    String phone = rs.getString(PHONE);
+                    int status = rs.getInt(STATUS);
+                    int role = rs.getInt(ROLE);
                     
                     // Create account object
                     Account acc = new Account(accID, email, password, fullname, phone, status, role);
                     
                     // Add account to the list
-                    list.add(acc);
+                    accounts.add(acc);
                 }
             }
         }
     } catch (SQLException e) {
         throw new AccountException("Error fetching accounts from the database", e);
-    } catch (IOException e) {
-        throw new AccountException("IO error occurred while retrieving accounts", e);
     } catch (Exception e) {
         throw new AccountException("An unexpected error occurred", e);
     }
     
-    return list;
+    return accounts;
 }
 
     public static boolean updateAccountStatus(String email, int status) {
         boolean result = false;
         try (Connection cn = DBUtils.makeConnection()) {
             if (cn != null) {
-                String sql = "UPDATE Accounts SET status = ? WHERE email = ?";
+                String sql = "UPDATE Accounts SET " + STATUS + " = ? WHERE " + EMAIL + " = ?";
                 try (PreparedStatement pst = cn.prepareStatement(sql)) {
                     pst.setInt(1, status);
                     pst.setString(2, email);
@@ -98,7 +108,7 @@ public class AccountDAO {
         boolean result = false;
         try (Connection cn = DBUtils.makeConnection()) {
             if (cn != null) {
-                String sql = "UPDATE Accounts SET password = ?, fullname = ?, phone = ? WHERE email = ?";
+                String sql = "UPDATE Accounts SET " + PASSWORD + " = ?, " + FULLNAME + " = ?, " + PHONE + " = ? WHERE " + EMAIL + " = ?";
                 try (PreparedStatement pst = cn.prepareStatement(sql)) {
                     pst.setString(1, newPassword);
                     pst.setString(2, newFullname);
@@ -118,7 +128,7 @@ newPhone, int newStatus, int newRole) throws Exception {
         int result = 0;
         try (Connection cn = DBUtils.makeConnection()) {
             if (cn != null) {
-                String sql = "INSERT INTO dbo.Accounts (email, password, fullname, phone, status, role) "
+                String sql = "INSERT INTO dbo.Accounts (" + EMAIL + ", " + PASSWORD + ", " + FULLNAME + ", " + PHONE + ", " + STATUS + ", " + ROLE + ") "
                         + "VALUES (?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement pst = cn.prepareStatement(sql)) {
                     pst.setString(1, newEmail);
@@ -138,7 +148,7 @@ newPhone, int newStatus, int newRole) throws Exception {
         boolean result = false;
         try (Connection cn = DBUtils.makeConnection()) {
             if (cn != null) {
-                String sql = "UPDATE Accounts SET token = ? WHERE email = ?";
+                String sql = "UPDATE Accounts SET token = ? WHERE " + EMAIL + " = ?";
                 try (PreparedStatement pst = cn.prepareStatement(sql)) {
                     pst.setString(1, token);
                     pst.setString(2, email);
@@ -155,22 +165,22 @@ newPhone, int newStatus, int newRole) throws Exception {
         Account acc = null;
         try (Connection cn = DBUtils.makeConnection()) {
             if (cn != null) {
-                String sql = "SELECT accID, email, password, fullname, phone, status, role, token "
+                String sql = "SELECT " + ACCID + ", " + EMAIL + ", " + PASSWORD + ", " + FULLNAME + ", " + PHONE + ", " + STATUS + ", " + ROLE + ", token "
                         + "FROM dbo.Accounts "
                         + "WHERE token = ? COLLATE Latin1_General_CS_AS";
                 try (PreparedStatement pst = cn.prepareStatement(sql)) {
                     pst.setString(1, token);
                     try (ResultSet rs = pst.executeQuery()) {
                         if (rs.next()) {
-                            int accID = rs.getInt("accID");
-                            String email = rs.getString("email");
-                            String password = rs.getString("password");
-                            String fullname = rs.getString("fullname");
-                            String phone = rs.getString("phone");
-                            int status = rs.getInt("status");
-                            int role = rs.getInt("role");
+                            int accID = rs.getInt(ACCID);
+                            String emailDb = rs.getString(EMAIL);
+                            String passwordDb = rs.getString(PASSWORD);
+                            String fullname = rs.getString(FULLNAME);
+                            String phone = rs.getString(PHONE);
+                            int status = rs.getInt(STATUS);
+                            int role = rs.getInt(ROLE);
                             String tokenDb = rs.getString("token");
-                            acc = new Account(accID, email, password, fullname, status, phone, role, tokenDb);
+                            acc = new Account(accID, emailDb, passwordDb, fullname, status, phone, role, tokenDb);
                         }
                     }
                 }
@@ -185,20 +195,20 @@ newPhone, int newStatus, int newRole) throws Exception {
         ArrayList<Account> list = new ArrayList<>();
         try (Connection cn = DBUtils.makeConnection()) {
             if (cn != null) {
-                String sql = "SELECT accID, email, password, fullname, phone, status, role "
-                        + "FROM dbo.Accounts "
-                        + "WHERE email = ? COLLATE Latin1_General_CS_AS";
+                String sql = "SELECT " + ACCID + ", " + EMAIL + ", " + PASSWORD + ", " + FULLNAME + ", " + PHONE + ", " + STATUS + ", " + ROLE 
+                        + " FROM dbo.Accounts "
+                        + "WHERE " + EMAIL + " = ? COLLATE Latin1_General_CS_AS";
                 try (PreparedStatement pst = cn.prepareStatement(sql)) {
                     pst.setString(1, email);
                     try (ResultSet rs = pst.executeQuery()) {
                         while (rs.next()) {
-                            int accID = rs.getInt("accID");
-                            String emailDb = rs.getString("email");
-                            String password = rs.getString("password");
-                            String fullname = rs.getString("fullname");
-                            String phone = rs.getString("phone");
-                            int status = rs.getInt("status");
-                            int role = rs.getInt("role");
+                            int accID = rs.getInt(ACCID);
+                            String emailDb = rs.getString(EMAIL);
+                            String password = rs.getString(PASSWORD);
+                            String fullname = rs.getString(FULLNAME);
+                            String phone = rs.getString(PHONE);
+                            int status = rs.getInt(STATUS);
+                            int role = rs.getInt(ROLE);
                             Account acc = new Account(accID, emailDb, password, fullname, status, phone, role);
                             list.add(acc);
                         }
