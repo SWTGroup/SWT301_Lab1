@@ -47,7 +47,7 @@ public class AccountDAO {
                 String sql = "SELECT accID, email, password, fullname, phone, status, role FROM dbo.Accounts";
                 try (Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
                     while (rs.next()) {
-                        int accID = rs.getInt("accID");
+                        private static final String ACC_ID = "accID";
                         String email = rs.getString("email");
                         String password = rs.getString("password");
                         String fullname = rs.getString("fullname");
