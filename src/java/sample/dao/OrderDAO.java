@@ -106,14 +106,17 @@ public class OrderDAO {
                 }
             }
 
-            for (String pid : cart.keySet()) {
-                try (PreparedStatement pst = cn.prepareStatement(insertOrderDetailSql)) {
-                    pst.setInt(1, orderID);
-                    pst.setInt(2, Integer.parseInt(pid.trim()));
-                    pst.setInt(3, cart.get(pid));
-                    pst.executeUpdate();
-                }
-            }
+           for (Map.Entry<String, Product> entry : cart.entrySet()) {
+    String pid = entry.getKey();
+    Product product = entry.getValue();
+    
+    try (PreparedStatement pst = cn.prepareStatement(insertOrderDetailSql)) {
+        pst.setInt(1, orderID);
+        pst.setInt(2, Integer.parseInt(pid.trim()));
+        pst.setInt(3, product.getQuantity());  // Assuming Product has a getQuantity() method
+        pst.executeUpdate();
+    }
+}
 
             cn.commit();
             return true;
