@@ -7,13 +7,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import javax.security.auth.login.AccountException;
 import sample.dto.Account;
 import sample.utils.DBUtils;
-import sample.exceptions.AccountException;
 
 public class AccountDAO {
 
-    // Define constants for field names
     private static final String FULLNAME = "fullname";
     private static final String ACCID = "accID";
     private static final String EMAIL = "email";
@@ -21,7 +20,7 @@ public class AccountDAO {
     private static final String PHONE = "phone";
     private static final String STATUS = "status";
     private static final String ROLE = "role";
-    
+
     public static Account getAccount(String email, String password) {
         Account acc = null;
         try (Connection cn = DBUtils.makeConnection()) {
@@ -41,51 +40,42 @@ public class AccountDAO {
                             String phone = rs.getString(PHONE);
                             int status = rs.getInt(STATUS);
                             int role = rs.getInt(ROLE);
-                            acc = new Account(accID, emailDb, passwordDb, fullname, status, phone, role);
+                            acc = new Account(accID, emailDb, passwordDb, fullname, phone, status, role);
                         }
                     }
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return acc;
     }
 
-   public static List<Account> getAccounts() throws AccountException {
+    public static List<Account> getAccounts() throws AccountException {
 
-    List<Account> accounts = new ArrayList<>();
-    
-    try (Connection cn = DBUtils.makeConnection()) {
-        if (cn != null) {
-            String sql = "SELECT " + ACCID + ", " + EMAIL + ", " + PASSWORD + ", " + FULLNAME + ", " + PHONE + ", " + STATUS + ", " + ROLE + " FROM dbo.Accounts";
-            try (Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-                while (rs.next()) {
-                    // Retrieve account information
-                    int accID = rs.getInt(ACCID);
-                    String email = rs.getString(EMAIL);
-                    String password = rs.getString(PASSWORD);
-                    String fullname = rs.getString(FULLNAME);
-                    String phone = rs.getString(PHONE);
-                    int status = rs.getInt(STATUS);
-                    int role = rs.getInt(ROLE);
-                    
-                    // Create account object
-                    Account acc = new Account(accID, email, password, fullname, phone, status, role);
-                    
-                    // Add account to the list
-                    accounts.add(acc);
+        List<Account> accounts = new ArrayList<>();
+
+        try (Connection cn = DBUtils.makeConnection()) {
+            if (cn != null) {
+                String sql = "SELECT " + ACCID + ", " + EMAIL + ", " + PASSWORD + ", " + FULLNAME + ", " + PHONE + ", " + STATUS + ", " + ROLE + " FROM dbo.Accounts";
+                try (Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+                    while (rs.next()) {
+                        int accID = rs.getInt(ACCID);
+                        String email = rs.getString(EMAIL);
+                        String password = rs.getString(PASSWORD);
+                        String fullname = rs.getString(FULLNAME);
+                        String phone = rs.getString(PHONE);
+                        int status = rs.getInt(STATUS);
+                        int role = rs.getInt(ROLE);
+                        Account acc = new Account(accID, email, password, fullname, phone, status, role);
+                        accounts.add(acc);
+                    }
                 }
             }
+        } catch (SQLException e) {
+        } catch (Exception e) {
         }
-    } catch (SQLException e) {
-        throw new AccountException("Error fetching accounts from the database", e);
-    } catch (Exception e) {
-        throw new AccountException("An unexpected error occurred", e);
+        return accounts;
     }
-    
-    return accounts;
-}
 
     public static boolean updateAccountStatus(String email, int status) {
         boolean result = false;
@@ -99,7 +89,6 @@ public class AccountDAO {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return result;
     }
@@ -118,13 +107,11 @@ public class AccountDAO {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return result;
     }
 
-    public static int insertAccount(String newEmail, String newPassword, String newFullname, String
-newPhone, int newStatus, int newRole) throws Exception {
+    public static int insertAccount(String newEmail, String newPassword, String newFullname, String newPhone, int newStatus, int newRole) throws Exception {
         int result = 0;
         try (Connection cn = DBUtils.makeConnection()) {
             if (cn != null) {
@@ -156,7 +143,6 @@ newPhone, int newStatus, int newRole) throws Exception {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return result;
     }
@@ -186,40 +172,34 @@ newPhone, int newStatus, int newRole) throws Exception {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return acc;
     }
 
-    public static ArrayList<Account> getAccountsByEmail(String email) throws Exception {
-        ArrayList<Account> list = new ArrayList<>();
+    public static List<Account> getAccountByEmail(String email) {
+        List<Account> list = new ArrayList<>();
         try (Connection cn = DBUtils.makeConnection()) {
             if (cn != null) {
-                String sql = "SELECT " + ACCID + ", " + EMAIL + ", " + PASSWORD + ", " + FULLNAME + ", " + PHONE + ", " + STATUS + ", " + ROLE 
-                        + " FROM dbo.Accounts "
-                        + "WHERE " + EMAIL + " = ? COLLATE Latin1_General_CS_AS";
+                String sql = "SELECT accID, email, password, fullname, phone, status, role FROM Accounts WHERE email LIKE ?";
                 try (PreparedStatement pst = cn.prepareStatement(sql)) {
-                    pst.setString(1, email);
+                    pst.setString(1, "%" + email + "%");
                     try (ResultSet rs = pst.executeQuery()) {
                         while (rs.next()) {
-                            int accID = rs.getInt(ACCID);
-                            String emailDb = rs.getString(EMAIL);
-                            String password = rs.getString(PASSWORD);
-                            String fullname = rs.getString(FULLNAME);
-                            String phone = rs.getString(PHONE);
-                            int status = rs.getInt(STATUS);
-                            int role = rs.getInt(ROLE);
-                            Account acc = new Account(accID, emailDb, password, fullname, status, phone, role);
+                            int accID = rs.getInt("accID");
+                            String emailDb = rs.getString("email");
+                            String passwordDb = rs.getString("password");
+                            String fullname = rs.getString("fullname");
+                            String phone = rs.getString("phone");
+                            int status = rs.getInt("status");
+                            int role = rs.getInt("role");
+                            Account acc = new Account(accID, emailDb, passwordDb, fullname, phone, status, role);
                             list.add(acc);
                         }
                     }
                 }
             }
+        } catch (SQLException e) {
         }
         return list;
-    }
-
-    public static ArrayList<Account> getAccountByEmail(String search) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

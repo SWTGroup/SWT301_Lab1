@@ -15,7 +15,6 @@ public class DBUtils {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             cn = DriverManager.getConnection(url, username, password);
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
         }
         return cn;
     }

@@ -15,16 +15,14 @@ public class updateStatusAccountServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            String email = request.getParameter("email");
-            int status = Integer.parseInt(request.getParameter("status"));
-            if (status == 1) {
-                AccountDAO.updateAccountStatus(email, 0);
-            } else {
-                AccountDAO.updateAccountStatus(email, 1);
-            }
-            request.getRequestDispatcher("mainController?action=manageAccounts").forward(request, response);
+        String email = request.getParameter("email");
+        int status = Integer.parseInt(request.getParameter("status"));
+        if (status == 1) {
+            AccountDAO.updateAccountStatus(email, 0);
+        } else {
+            AccountDAO.updateAccountStatus(email, 1);
         }
+        request.getRequestDispatcher("mainController?action=manageAccounts").forward(request, response);
     }
 
     @Override

@@ -13,13 +13,15 @@ public class PlantDAO {
     public static ArrayList<Plant> getPlants(String keyword, String searchby) {
         ArrayList<Plant> list = new ArrayList<>();
         Connection cn = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
         try {
             cn = DBUtils.makeConnection();
             if (cn != null) {
                 String sql = """
-                             select PID, PName, price, imgPath, description, status, Plants.CateID as 'CateID', CateName
-                             from Plants join Categories on Plants.CateID=Categories.CateID
-                             """;
+                         select PID, PName, price, imgPath, description, status, Plants.CateID as 'CateID', CateName
+                         from Plants join Categories on Plants.CateID=Categories.CateID
+                         """;
                 if (searchby != null && !searchby.isEmpty()) {
                     if (searchby.equalsIgnoreCase("byname")) {
                         sql += " where Plants.PName like ?";
@@ -28,19 +30,11 @@ public class PlantDAO {
                     }
                 }
 
-                try (PreparedStatement pst = cn.prepareStatement(sql)) {
-
-  PreparedStatement here
-
-} catch (SQLException e) {
-
-    e.printStackTrace();
-
-}
+                pst = cn.prepareStatement(sql); // Initialize pst here
                 if (searchby != null && !searchby.isEmpty()) {
                     pst.setString(1, "%" + keyword + "%");
                 }
-                ResultSet rs = pst.executeQuery();
+                rs = pst.executeQuery(); // Execute query after setting parameters
                 while (rs.next()) {
                     int id = rs.getInt("PID");
                     String name = rs.getString("PName");
@@ -53,11 +47,21 @@ public class PlantDAO {
                     Plant plant = new Plant(id, name, price, imgpath, description, status, cateid, catename);
                     list.add(plant);
                 }
-                rs.close();
-                pst.close();
-                cn.close();
             }
         } catch (SQLException e) {
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (pst != null) {
+                    pst.close();
+                }
+                if (cn != null) {
+                    cn.close();
+                }
+            } catch (SQLException e) {
+            }
         }
         return list;
     }
@@ -72,17 +76,17 @@ public class PlantDAO {
                          where PID=?""";
             try (PreparedStatement pst = cn.prepareStatement(sql)) {
                 pst.setInt(1, id);
-                ResultSet rs = pst.executeQuery();
-                if (rs != null && rs.next()) {
-                    String name = rs.getString("PName");
-                    int price = rs.getInt("price");
-                    String imgpath = rs.getString("imgPath");
-                    String description = rs.getString("description");
-                    int status = rs.getInt("status");
-                    int cateid = rs.getInt("CateID");
-                    p = new Plant(id, name, price, imgpath, description, status, cateid, name);
+                try (ResultSet rs = pst.executeQuery()) {
+                    if (rs != null && rs.next()) {
+                        String name = rs.getString("PName");
+                        int price = rs.getInt("price");
+                        String imgpath = rs.getString("imgPath");
+                        String description = rs.getString("description");
+                        int status = rs.getInt("status");
+                        int cateid = rs.getInt("CateID");
+                        p = new Plant(id, name, price, imgpath, description, status, cateid, name);
+                    }
                 }
-                rs.close();
             }
             cn.close();
         }

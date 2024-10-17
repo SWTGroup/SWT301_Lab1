@@ -17,12 +17,10 @@ public class searchOrderServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            String search = request.getParameter("txtSearch");
-            ArrayList<Order> ord = OrderDAO.getOrders(search);
-            request.setAttribute("ordersList", ord);
-            request.getRequestDispatcher("ManageOrders.jsp").forward(request, response);
-        }
+        String search = request.getParameter("txtSearch");
+        ArrayList<Order> ord = OrderDAO.getOrders(search);
+        request.setAttribute("ordersList", ord);
+        request.getRequestDispatcher("ManageOrders.jsp").forward(request, response);
     }
 
     @Override

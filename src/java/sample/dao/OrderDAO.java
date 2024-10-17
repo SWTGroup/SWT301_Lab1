@@ -8,8 +8,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import sample.dto.Order;
 import sample.dto.OrderDetail;
+import sample.dto.Plant;
 import sample.utils.DBUtils;
 
 public class OrderDAO {
@@ -43,7 +45,6 @@ public class OrderDAO {
                 + "WHERE OrderID = ?";
 
         try (Connection cn = DBUtils.makeConnection(); PreparedStatement pst = cn.prepareStatement(sql)) {
-
             pst.setInt(1, orderID);
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
@@ -64,7 +65,6 @@ public class OrderDAO {
     public static boolean updateOrderStatus(String orderID, int status) {
         String sql = "UPDATE dbo.Orders SET status = ? WHERE OrderID = ?";
         try (Connection cn = DBUtils.makeConnection(); PreparedStatement pst = cn.prepareStatement(sql)) {
-
             pst.setInt(1, status);
             pst.setString(2, orderID);
             return pst.executeUpdate() > 0;
@@ -73,16 +73,18 @@ public class OrderDAO {
         return false;
     }
 
-    public static boolean insertOrder(String email, HashMap<String, Integer> cart) {
+    public static boolean insertOrder(String email, HashMap<String, Plant> cart) {
         String getAccIDSql = "SELECT accID FROM Accounts WHERE email = ?";
         String insertOrderSql = "INSERT INTO Orders(OrdDate, status, AccID) VALUES(?, ?, ?)";
         String getOrderIDSql = "SELECT TOP 1 OrderID FROM Orders ORDER BY OrderID DESC";
         String insertOrderDetailSql = "INSERT INTO OrderDetails VALUES(?, ?, ?)";
+
         try (Connection cn = DBUtils.makeConnection()) {
             cn.setAutoCommit(false);
 
             int accID = 0;
             int orderID = 0;
+
             try (PreparedStatement pst = cn.prepareStatement(getAccIDSql)) {
                 pst.setString(1, email);
                 try (ResultSet rs = pst.executeQuery()) {
@@ -106,17 +108,17 @@ public class OrderDAO {
                 }
             }
 
-           for (Map.Entry<String, Product> entry : cart.entrySet()) {
-    String pid = entry.getKey();
-    Product product = entry.getValue();
-    
-    try (PreparedStatement pst = cn.prepareStatement(insertOrderDetailSql)) {
-        pst.setInt(1, orderID);
-        pst.setInt(2, Integer.parseInt(pid.trim()));
-        pst.setInt(3, product.getQuantity());  // Assuming Product has a getQuantity() method
-        pst.executeUpdate();
-    }
-}
+            for (Map.Entry<String, Plant> entry : cart.entrySet()) {
+                String pid = entry.getKey();
+                Plant product = entry.getValue();
+
+                try (PreparedStatement pst = cn.prepareStatement(insertOrderDetailSql)) {
+                    pst.setInt(1, orderID);
+                    pst.setInt(2, Integer.parseInt(pid.trim()));
+                    pst.setInt(3, product.getQuantity());
+                    pst.executeUpdate();
+                }
+            }
 
             cn.commit();
             return true;
@@ -134,7 +136,6 @@ public class OrderDAO {
         String sql = "SELECT OrderID, OrdDate, shipDate, status, AccID FROM Orders WHERE OrdDate BETWEEN ? AND ?";
 
         try (Connection cn = DBUtils.makeConnection(); PreparedStatement pst = cn.prepareStatement(sql)) {
-
             pst.setDate(1, from);
             pst.setDate(2, to);
             try (ResultSet rs = pst.executeQuery()) {
@@ -156,9 +157,7 @@ public class OrderDAO {
         ArrayList<Order> list = new ArrayList<>();
         String sql = "SELECT OrderID, OrdDate, shipDate, Orders.status AS 'status', Orders.AccID AS 'AccID' "
                 + "FROM Orders JOIN Accounts ON Orders.AccID = Accounts.accID";
-
         try (Connection cn = DBUtils.makeConnection(); Statement st = cn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-
             while (rs.next()) {
                 int orderID = rs.getInt("OrderID");
                 String ordDate = rs.getString("OrdDate");

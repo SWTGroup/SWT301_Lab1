@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import sample.dao.AccountDAO;
 
 @WebServlet(name = "registerServlet", urlPatterns = {"/registerServlet"})
@@ -16,7 +15,7 @@ public class registerServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
+        try {
             String email = request.getParameter("txtemail");
             String fullname = request.getParameter("txtfullname");
             String password = request.getParameter("txtpassword");

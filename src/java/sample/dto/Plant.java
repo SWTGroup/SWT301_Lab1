@@ -12,6 +12,7 @@ public class Plant implements Serializable {
     private int status;
     private int cateid;
     private String catename;
+    private int quantity;
 
     public Plant() {
     }
@@ -89,5 +90,9 @@ public class Plant implements Serializable {
 
     public void setCatename(String catename) {
         this.catename = catename;
+    }
+
+    public int getQuantity() {
+        return this.quantity;
     }
 }

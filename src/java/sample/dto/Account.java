@@ -14,13 +14,13 @@ public class Account {
     public Account() {
     }
 
-    public Account(int accID, String email, String password, String fullname, int status, String phone, int role) {
+    public Account(int accID, String email, String password, String fullname, String phone, int status, int role) {
         this.accID = accID;
         this.email = email;
         this.password = password;
         this.fullname = fullname;
-        this.status = status;
         this.phone = phone;
+        this.status = status;
         this.role = role;
     }
 
